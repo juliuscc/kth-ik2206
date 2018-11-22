@@ -26,6 +26,7 @@ public class SessionKey {
     public String encodeKey() {
         return Base64
                 .getEncoder()
+                .withoutPadding()
                 .encodeToString(secretKey.getEncoded());
     }
 
