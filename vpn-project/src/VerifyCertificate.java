@@ -31,11 +31,11 @@ public class VerifyCertificate {
     /**
      * Copied from: https://docs.oracle.com/javase/7/docs/api/java/security/cert/X509Certificate.html
      */
-    private static X509Certificate getCertificate(String caFilePath) throws IOException, CertificateException {
+    private static X509Certificate getCertificate(String certificateFilePath) throws IOException, CertificateException {
         X509Certificate cert;
         InputStream inStream = null;
         try {
-            inStream = new FileInputStream(caFilePath);
+            inStream = new FileInputStream(certificateFilePath);
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             cert = (X509Certificate) cf.generateCertificate(inStream);
         } finally {
