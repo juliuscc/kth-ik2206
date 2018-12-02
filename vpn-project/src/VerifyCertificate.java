@@ -2,6 +2,7 @@ import java.io.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 
 public class VerifyCertificate {
     public static void main(String[] args) throws IOException, CertificateException {
@@ -21,6 +22,7 @@ public class VerifyCertificate {
         try {
             caCert.verify(caCert.getPublicKey());
             userCert.verify(caCert.getPublicKey());
+            userCert.checkValidity(new Date());
             System.out.println("Pass");
         } catch (Exception e) {
             System.out.println("Fail");
