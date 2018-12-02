@@ -24,6 +24,7 @@ public class VerifyCertificate {
             System.out.println("Pass");
         } catch (Exception e) {
             System.out.println("Fail");
+            System.out.println(e.getMessage());
         }
     }
 
