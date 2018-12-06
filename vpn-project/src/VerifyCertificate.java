@@ -34,7 +34,7 @@ public class VerifyCertificate {
     /**
      * Copied from: https://docs.oracle.com/javase/7/docs/api/java/security/cert/X509Certificate.html
      */
-    private static X509Certificate getCertificate(String certificateFilePath) throws IOException, CertificateException {
+    public static X509Certificate getCertificate(String certificateFilePath) throws IOException, CertificateException {
         X509Certificate cert;
         InputStream inStream = null;
         try {
