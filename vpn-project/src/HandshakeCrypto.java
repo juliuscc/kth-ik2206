@@ -1,63 +1,46 @@
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 public class HandshakeCrypto {
 
-    public static byte[] encrypt(byte[] plaintext, Key key) {
-        try {
-            Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
+    public static byte[] encrypt(byte[] plaintext, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
 
-            return cipher.doFinal(plaintext);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return cipher.doFinal(plaintext);
     }
 
-    public static byte[] decrypt(byte[] ciphertext, Key key) {
-        try {
-            Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.DECRYPT_MODE, key);
+    public static byte[] decrypt(byte[] ciphertext, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, key);
 
-            return cipher.doFinal(ciphertext);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return cipher.doFinal(ciphertext);
     }
 
-    public static PublicKey getPublicKeyFromCertFile(String certfile) {
-        try {
-            X509Certificate certificate = VerifyCertificate.getCertificate(certfile);
-            return certificate.getPublicKey();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+    public static PublicKey getPublicKeyFromCertFile(String certfile) throws IOException, CertificateException {
+        X509Certificate certificate = VerifyCertificate.getCertificate(certfile);
+        return certificate.getPublicKey();
     }
 
-    public static PrivateKey getPrivateKeyFromKeyFile(String keyfile) {
-        try {
-            Path path = Paths.get(keyfile);
-            byte[] privKeyByteArray = Files.readAllBytes(path);
+    public static PrivateKey getPrivateKeyFromKeyFile(String keyfile) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
+        Path path = Paths.get(keyfile);
+        byte[] privKeyByteArray = Files.readAllBytes(path);
 
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privKeyByteArray);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privKeyByteArray);
 
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
-            return keyFactory.generatePrivate(keySpec);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return keyFactory.generatePrivate(keySpec);
     }
 }
