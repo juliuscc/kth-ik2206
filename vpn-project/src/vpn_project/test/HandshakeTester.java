@@ -1,3 +1,7 @@
+package vpn_project.test;
+
+import vpn_project.crypto.HandshakeCrypto;
+
 import java.security.*;
 
 public class HandshakeTester {

@@ -1,3 +1,8 @@
+package vpn_project.test;
+
+import vpn_project.crypto.SessionDecrypter;
+import vpn_project.crypto.SessionEncrypter;
+
 import java.io.*;
 import javax.crypto.*;
 
@@ -19,7 +24,7 @@ public class TestSessionCrypto {
                 FileInputStream plainin = new FileInputStream(PLAININPUT);
         ) {
 
-            // Copy data byte by byte from plain input to crypto output via encrypter
+            // Copy data byte by byte from plain input to vpn_project.crypto output via encrypter
 
             while ((b = plainin.read()) != -1) {
                 cryptoout.write(b);
