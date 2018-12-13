@@ -1,10 +1,194 @@
 package vpn_project.forward_server; /**
  * Port forwarding server. Forward data
- * between two TCP ports. Based on Nakov TCP Socket Forward Server 
+ * between two TCP ports. Based on Nakov TCP Socket Forward Server
  * and adapted for IK2206.
- *
+ * <p>
  * Original copyright notice below.
  * (c) 2018 Peter Sjodin, KTH
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
+ * <p>
+ * Nakov TCP Socket Forward Server - freeware
+ * Version 1.0 - March, 2002
+ * (c) 2001 by Svetlin Nakov - http://www.nakov.com
  */
 
 /**
@@ -12,7 +196,8 @@ package vpn_project.forward_server; /**
  * Version 1.0 - March, 2002
  * (c) 2001 by Svetlin Nakov - http://www.nakov.com
  */
- 
+
+import java.io.*;
 import java.lang.AssertionError;
 import java.lang.Integer;
 import java.util.ArrayList;
@@ -21,13 +206,10 @@ import java.net.Socket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.io.IOException;
-import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
- 
-public class ForwardServer
-{
+
+public class ForwardServer {
     private static final boolean ENABLE_LOGGING = true;
     public static final int DEFAULTSERVERPORT = 2206;
     public static final String DEFAULTSERVERHOST = "localhost";
@@ -36,11 +218,11 @@ public class ForwardServer
 
 
     private ServerSocket handshakeSocket;
-    
+
     private ServerSocket listenSocket;
     private String targetHost;
     private int targetPort;
-    
+
     /**
      * Do handshake negotiation with client to authenticate, learn 
      * target host/port, etc.
@@ -52,18 +234,29 @@ public class ForwardServer
         Logger.log("Incoming handshake connection from " + clientHostPort);
 
         /* This is where the handshake should take place */
-        
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+        Logger.log("Initiated streams");
+
+        String message;
+        while ((message = in.readLine()) != null) {
+            Logger.log("Received message");
+            out.println(message);
+        }
+
         clientSocket.close();
 
         /*
-         * Fake the handshake result with static parameters. 
+         * Fake the handshake result with static parameters.
          */
 
-        /* listenSocket is a new socket where the ForwardServer waits for the 
+        /* listenSocket is a new socket where the ForwardServer waits for the
          * client to connect. The ForwardServer creates this socket and communicates
-         * the socket's address to the ForwardClient during the handshake, so that the 
+         * the socket's address to the ForwardClient during the handshake, so that the
          * ForwardClient knows to where it should connect (ServerHost/ServerPort parameters).
-         * Here, we use a static address instead (serverHost/serverPort). 
+         * Here, we use a static address instead (serverHost/serverPort).
          * (This may give "Address already in use" errors, but that's OK for now.)
          */
         listenSocket = new ServerSocket();
@@ -73,7 +266,7 @@ public class ForwardServer
          * between the listensocket (ie., ServerHost/ServerPort) and the target.
          */
         targetHost = Handshake.targetHost;
-        targetPort = Handshake.targetPort;        
+        targetPort = Handshake.targetPort;
     }
 
     /**
@@ -81,74 +274,71 @@ public class ForwardServer
      */
     public void startForwardServer()
     //throws IOException
-        throws Exception
-    {
- 
+            throws Exception {
+
         // Bind server on given TCP port
         int port = Integer.parseInt(arguments.get("handshakeport"));
         try {
             handshakeSocket = new ServerSocket(port);
         } catch (IOException ioe) {
-           throw new IOException("Unable to bind to port " + port);
+            throw new IOException("Unable to bind to port " + port);
         }
 
         log("Nakov Forward Server started on TCP port " + port);
- 
+
         // Accept client connections and process them until stopped
-        while(true) {
+        while (true) {
             ForwardServerClientThread forwardThread;
-           try {
+            try {
 
-               doHandshake();
+                doHandshake();
 
-               forwardThread = new ForwardServerClientThread(this.listenSocket, this.targetHost, this.targetPort);
-               forwardThread.start();
-           } catch (IOException e) {
-               throw e;
-           }
+                forwardThread = new ForwardServerClientThread(this.listenSocket, this.targetHost, this.targetPort);
+                forwardThread.start();
+            } catch (IOException e) {
+                throw e;
+            }
         }
     }
- 
+
     /**
      * Prints given log message on the standart output if logging is enabled,
      * otherwise ignores it
      */
-    public void log(String aMessage)
-    {
+    public void log(String aMessage) {
         if (ENABLE_LOGGING)
-           System.out.println(aMessage);
+            System.out.println(aMessage);
     }
- 
+
     static void usage() {
         String indent = "";
         System.err.println(indent + "Usage: " + PROGRAMNAME + " options");
         System.err.println(indent + "Where options are:");
         indent += "    ";
         System.err.println(indent + "--handshakehost=<hostname>");
-        System.err.println(indent + "--handshakeport=<portnumber>");        
+        System.err.println(indent + "--handshakeport=<portnumber>");
         System.err.println(indent + "--usercert=<filename>");
         System.err.println(indent + "--cacert=<filename>");
-        System.err.println(indent + "--key=<filename>");                
+        System.err.println(indent + "--key=<filename>");
     }
-    
+
     /**
      * Program entry point. Reads settings, starts check-alive thread and
      * the forward server
      */
     public static void main(String[] args)
-        throws Exception
-    {
+            throws Exception {
         arguments = new Arguments();
         arguments.setDefault("handshakeport", Integer.toString(DEFAULTSERVERPORT));
         arguments.setDefault("handshakehost", DEFAULTSERVERHOST);
         arguments.loadArguments(args);
-        
+
         ForwardServer srv = new ForwardServer();
         try {
-           srv.startForwardServer();
+            srv.startForwardServer();
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
- 
+
 }
