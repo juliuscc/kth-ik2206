@@ -14,6 +14,8 @@ package vpn_project.forward_server;
  */
 
 
+import vpn_project.crypto.CertificateCrypto;
+
 import java.io.*;
 import java.lang.IllegalArgumentException;
 import java.lang.Integer;
@@ -21,6 +23,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 public class ForwardClient {
     private static final boolean ENABLE_LOGGING = true;
@@ -32,7 +38,10 @@ public class ForwardClient {
     private static int serverPort;
     private static String serverHost;
 
-    private static void doHandshake() throws IOException {
+    private static CertificateCrypto clientCertificate;
+    private static CertificateCrypto caCertificate;
+
+    private static void doHandshake() throws IOException, CertificateEncodingException {
 
         /* Connect to forward server server */
         System.out.println("Connect to " + arguments.get("handshakehost") + ":" + Integer.parseInt(arguments.get("handshakeport")));
@@ -40,18 +49,27 @@ public class ForwardClient {
 
 
         /* This is where the handshake should take place */
-        HandshakeMessage handshakeMessage = new HandshakeMessage();
-        handshakeMessage.putParameter("hello", "world");
-        handshakeMessage.send(socket);
-//        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        HandshakeMessage clientHello = new HandshakeMessage();
+        clientHello.putParameter("MessageType", "ClientHello");
+        clientHello.putParameter("Certificate", clientCertificate.encodeCertificate());
+        clientHello.send(socket);
 
-//        String message;
-//        while ((message = in.readLine()) != null) {
-//            System.out.println("Received message");
-//            System.out.println(message);
-//        }
+        HandshakeMessage serverHello = new HandshakeMessage();
+        serverHello.recv(socket);
 
+        System.out.println(serverHello);
+
+        if (serverHello.getParameter("MessageType").equals("ServerHello")) {
+            try {
+                CertificateCrypto serverCertificate = new CertificateCrypto(serverHello.getParameter("Certificate"));
+                serverCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
+                serverCertificate.getCertificate().checkValidity();
+
+                System.out.println(serverCertificate.getCertificate().getSubjectDN());
+            } catch (Exception e) {
+                System.out.println("Verify server certificate failed.");
+            }
+        }
 
         socket.close();
 
@@ -83,7 +101,10 @@ public class ForwardClient {
      * Run handshake negotiation, then set up a listening socket and wait for user.
      * When user has connected, start port forwarder thread.
      */
-    static public void startForwardClient() throws IOException {
+    static public void startForwardClient() throws IOException, CertificateException {
+
+        clientCertificate = new CertificateCrypto(true, arguments.get("usercert"));
+        caCertificate = new CertificateCrypto(true, arguments.get("cacert"));
 
         doHandshake();
 
@@ -159,7 +180,7 @@ public class ForwardClient {
         }
         try {
             startForwardClient();
-        } catch (IOException e) {
+        } catch (IOException | CertificateException e) {
             e.printStackTrace();
         }
     }

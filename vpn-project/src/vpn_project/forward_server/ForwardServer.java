@@ -13,17 +13,19 @@ package vpn_project.forward_server;
  * (c) 2001 by Svetlin Nakov - http://www.nakov.com
  */
 
+import vpn_project.crypto.CertificateCrypto;
+
 import java.io.*;
 import java.lang.AssertionError;
 import java.lang.Integer;
-import java.util.ArrayList;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.Properties;
-import java.util.StringTokenizer;
 
 public class ForwardServer {
     private static final boolean ENABLE_LOGGING = true;
@@ -39,6 +41,9 @@ public class ForwardServer {
     private String targetHost;
     private int targetPort;
 
+    private static CertificateCrypto serverCertificate;
+    private static CertificateCrypto caCertificate;
+
     /**
      * Do handshake negotiation with client to authenticate, learn
      * target host/port, etc.
@@ -51,11 +56,27 @@ public class ForwardServer {
 
         /* This is where the handshake should take place */
 
-        HandshakeMessage handshakeMessage = new HandshakeMessage();
-        handshakeMessage.recv(clientSocket);
+        HandshakeMessage clientHello = new HandshakeMessage();
+        clientHello.recv(clientSocket);
 
-        System.out.println(handshakeMessage);
+        if (clientHello.getParameter("MessageType").equals("ClientHello")) {
+            try {
+                CertificateCrypto clientCertificate = new CertificateCrypto(clientHello.getParameter("Certificate"));
 
+                clientCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
+                clientCertificate.getCertificate().checkValidity();
+
+
+                HandshakeMessage serverHello = new HandshakeMessage();
+
+                serverHello.putParameter("MessageType", "ServerHello");
+                serverHello.putParameter("Certificate", serverCertificate.encodeCertificate());
+
+                serverHello.send(clientSocket);
+            } catch (Exception e) {
+                System.out.println("Verify client certificate failed.");
+            }
+        }
 
         clientSocket.close();
 
@@ -83,9 +104,10 @@ public class ForwardServer {
     /**
      * Starts the forward server - binds on a given port and starts serving
      */
-    public void startForwardServer()
-    //throws IOException
-            throws Exception {
+    public void startForwardServer() throws Exception {
+
+        serverCertificate = new CertificateCrypto(true, arguments.get("usercert"));
+        caCertificate = new CertificateCrypto(true, arguments.get("cacert"));
 
         // Bind server on given TCP port
         int port = Integer.parseInt(arguments.get("handshakeport"));
