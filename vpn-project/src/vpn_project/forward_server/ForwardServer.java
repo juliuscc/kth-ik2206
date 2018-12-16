@@ -51,14 +51,11 @@ public class ForwardServer {
 
         /* This is where the handshake should take place */
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        HandshakeMessage handshakeMessage = new HandshakeMessage();
+        handshakeMessage.recv(clientSocket);
 
-        String message;
-        while ((message = in.readLine()) != null) {
-//            Logger.log("Received message");
-            Logger.log(message);
-        }
+        System.out.println(handshakeMessage);
+
 
         clientSocket.close();
 
