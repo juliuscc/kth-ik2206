@@ -14,6 +14,9 @@ package vpn_project.forward_server;
  */
 
 import vpn_project.crypto.CertificateCrypto;
+import vpn_project.crypto.HandshakeCrypto;
+import vpn_project.crypto.SessionEncrypter;
+import vpn_project.crypto.SessionKey;
 
 import java.io.*;
 import java.lang.AssertionError;
@@ -51,54 +54,73 @@ public class ForwardServer {
     private void doHandshake() throws UnknownHostException, IOException, Exception {
 
         Socket clientSocket = handshakeSocket.accept();
-        String clientHostPort = clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort();
-        Logger.log("Incoming handshake connection from " + clientHostPort);
 
-        /* This is where the handshake should take place */
+        try {
+            String clientHostPort = clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort();
+            Logger.log("Incoming handshake connection from " + clientHostPort);
 
-        HandshakeMessage clientHello = new HandshakeMessage();
-        clientHello.recv(clientSocket);
+            /* This is where the handshake should take place */
 
-        if (clientHello.getParameter("MessageType").equals("ClientHello")) {
-            try {
-                CertificateCrypto clientCertificate = new CertificateCrypto(clientHello.getParameter("Certificate"));
+            /* ClientHello Message */
+            HandshakeMessage clientHello = new HandshakeMessage();
+            clientHello.recv(clientSocket);
 
-                clientCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
-                clientCertificate.getCertificate().checkValidity();
-
-
-                HandshakeMessage serverHello = new HandshakeMessage();
-
-                serverHello.putParameter("MessageType", "ServerHello");
-                serverHello.putParameter("Certificate", serverCertificate.encodeCertificate());
-
-                serverHello.send(clientSocket);
-            } catch (Exception e) {
-                System.out.println("Verify client certificate failed.");
+            if (!clientHello.getParameter("MessageType").equals("ClientHello")) {
+                throw new Exception("Received unexpected message");
             }
+
+            CertificateCrypto clientCertificate = new CertificateCrypto(clientHello.getParameter("Certificate"));
+
+            clientCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
+            clientCertificate.getCertificate().checkValidity();
+
+            /* ServerHello Message */
+            HandshakeMessage serverHello = new HandshakeMessage();
+
+            serverHello.putParameter("MessageType", "ServerHello");
+            serverHello.putParameter("Certificate", serverCertificate.encodeCertificate());
+
+            serverHello.send(clientSocket);
+
+            /* Forward Message */
+            HandshakeMessage forwardMessage = new HandshakeMessage();
+            forwardMessage.recv(clientSocket);
+
+            if (!forwardMessage.getParameter("MessageType").equals("Forward")) {
+                throw new Exception("Received unexpected message");
+            }
+            targetHost = forwardMessage.getParameter("TargetHost");
+            targetPort = Integer.parseInt(forwardMessage.getParameter("TargetPort"));
+
+            /* Session Message */
+            SessionEncrypter sessionEncrypter = new SessionEncrypter(256);
+            String sessionKeyString = sessionEncrypter.encodeKey();
+            String encryptedKey = new String(HandshakeCrypto.encrypt(sessionKeyString.getBytes(), clientCertificate.getCertificate().getPublicKey()));
+
+            String sessionIVString = sessionEncrypter.encodeIV();
+            String encryptedIV = new String(HandshakeCrypto.encrypt(sessionIVString.getBytes(), clientCertificate.getCertificate().getPublicKey()));
+
+            String serverHost = InetAddress.getLocalHost().getHostAddress();
+
+            listenSocket = new ServerSocket();
+            listenSocket.bind(new InetSocketAddress(serverHost, 0));
+
+            HandshakeMessage sessionMessage = new HandshakeMessage();
+            sessionMessage.putParameter("MessageType", "Session");
+            sessionMessage.putParameter("SessionKey", encryptedKey);
+            sessionMessage.putParameter("SessionIV", encryptedIV);
+            sessionMessage.putParameter("ServerHost", serverHost);
+            sessionMessage.putParameter("ServerPort", Integer.toString(listenSocket.getLocalPort()));
+
+            sessionMessage.send(clientSocket);
+
+            clientSocket.close();
+            
+            Logger.log("Finished with handshake.");
+        } catch (Exception e) {
+            clientSocket.close();
+            throw e;
         }
-
-        clientSocket.close();
-
-        /*
-         * Fake the handshake result with static parameters.
-         */
-
-        /* listenSocket is a new socket where the ForwardServer waits for the
-         * client to connect. The ForwardServer creates this socket and communicates
-         * the socket's address to the ForwardClient during the handshake, so that the
-         * ForwardClient knows to where it should connect (ServerHost/ServerPort parameters).
-         * Here, we use a static address instead (serverHost/serverPort).
-         * (This may give "Address already in use" errors, but that's OK for now.)
-         */
-        listenSocket = new ServerSocket();
-        listenSocket.bind(new InetSocketAddress(Handshake.serverHost, Handshake.serverPort));
-
-        /* The final destination. The ForwardServer sets up port forwarding
-         * between the listensocket (ie., ServerHost/ServerPort) and the target.
-         */
-        targetHost = Handshake.targetHost;
-        targetPort = Handshake.targetPort;
     }
 
     /**
@@ -129,7 +151,8 @@ public class ForwardServer {
                 forwardThread = new ForwardServerClientThread(this.listenSocket, this.targetHost, this.targetPort);
                 forwardThread.start();
             } catch (IOException e) {
-                throw e;
+                System.out.println("Establishing connection with client was not possible.");
+                System.out.println(e.getMessage());
             }
         }
     }

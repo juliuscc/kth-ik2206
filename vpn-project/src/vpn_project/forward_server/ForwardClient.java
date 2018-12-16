@@ -41,7 +41,7 @@ public class ForwardClient {
     private static CertificateCrypto clientCertificate;
     private static CertificateCrypto caCertificate;
 
-    private static void doHandshake() throws IOException, CertificateEncodingException {
+    private static void doHandshake() throws IOException, CertificateEncodingException, Exception {
 
         /* Connect to forward server server */
         System.out.println("Connect to " + arguments.get("handshakehost") + ":" + Integer.parseInt(arguments.get("handshakeport")));
@@ -49,42 +49,45 @@ public class ForwardClient {
 
 
         /* This is where the handshake should take place */
+
+        /* ClientHello Message */
         HandshakeMessage clientHello = new HandshakeMessage();
         clientHello.putParameter("MessageType", "ClientHello");
         clientHello.putParameter("Certificate", clientCertificate.encodeCertificate());
         clientHello.send(socket);
 
+        /* ServerHello Message */
         HandshakeMessage serverHello = new HandshakeMessage();
         serverHello.recv(socket);
 
-        System.out.println(serverHello);
-
-        if (serverHello.getParameter("MessageType").equals("ServerHello")) {
-            try {
-                CertificateCrypto serverCertificate = new CertificateCrypto(serverHello.getParameter("Certificate"));
-                serverCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
-                serverCertificate.getCertificate().checkValidity();
-
-                System.out.println(serverCertificate.getCertificate().getSubjectDN());
-            } catch (Exception e) {
-                System.out.println("Verify server certificate failed.");
-            }
+        if (!serverHello.getParameter("MessageType").equals("ServerHello")) {
+            throw new Exception("Received unexpected message");
         }
+        CertificateCrypto serverCertificate = new CertificateCrypto(serverHello.getParameter("Certificate"));
+        serverCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
+        serverCertificate.getCertificate().checkValidity();
+
+        /* Forward Message */
+        HandshakeMessage forwardMessage = new HandshakeMessage();
+        forwardMessage.putParameter("MessageType", "Forward");
+        forwardMessage.putParameter("TargetHost", arguments.get("targethost"));
+        forwardMessage.putParameter("TargetPort", arguments.get("targetport"));
+        forwardMessage.send(socket);
+
+        /* Session Message */
+        HandshakeMessage sessionMessage = new HandshakeMessage();
+        sessionMessage.recv(socket);
+
+        if (!sessionMessage.getParameter("MessageType").equals("Session")) {
+            throw new Exception("Received unexpected message");
+        }
+
+        serverHost = sessionMessage.getParameter("ServerHost");
+        serverPort = Integer.parseInt(sessionMessage.getParameter("ServerPort"));
 
         socket.close();
 
-        /*
-         * Fake the handshake result with static parameters.
-         */
-
-        /* This is to where the ForwardClient should connect.
-         * The ForwardServer creates a socket
-         * dynamically and communicates the address (hostname and port number)
-         * to ForwardClient during the handshake (ServerHost, ServerPort parameters).
-         * Here, we use a static address instead.
-         */
-        serverHost = Handshake.serverHost;
-        serverPort = Handshake.serverPort;
+        Logger.log("Finished with handshake.");
     }
 
     /*
@@ -101,7 +104,7 @@ public class ForwardClient {
      * Run handshake negotiation, then set up a listening socket and wait for user.
      * When user has connected, start port forwarder thread.
      */
-    static public void startForwardClient() throws IOException, CertificateException {
+    static public void startForwardClient() throws IOException, CertificateException, Exception {
 
         clientCertificate = new CertificateCrypto(true, arguments.get("usercert"));
         caCertificate = new CertificateCrypto(true, arguments.get("cacert"));
@@ -180,7 +183,7 @@ public class ForwardClient {
         }
         try {
             startForwardClient();
-        } catch (IOException | CertificateException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
