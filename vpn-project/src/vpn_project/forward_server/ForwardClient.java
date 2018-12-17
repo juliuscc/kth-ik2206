@@ -15,6 +15,9 @@ package vpn_project.forward_server;
 
 
 import vpn_project.crypto.CertificateCrypto;
+import vpn_project.crypto.HandshakeCrypto;
+import vpn_project.crypto.SessionDecrypter;
+import vpn_project.crypto.SessionEncrypter;
 
 import java.io.*;
 import java.lang.IllegalArgumentException;
@@ -23,6 +26,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -40,6 +44,10 @@ public class ForwardClient {
 
     private static CertificateCrypto clientCertificate;
     private static CertificateCrypto caCertificate;
+    private static PrivateKey clientPrivateKey;
+
+    private static SessionDecrypter sessionDecrypter;
+    private static SessionEncrypter sessionEncrypter;
 
     private static void doHandshake() throws IOException, CertificateEncodingException, Exception {
 
@@ -85,6 +93,15 @@ public class ForwardClient {
         serverHost = sessionMessage.getParameter("ServerHost");
         serverPort = Integer.parseInt(sessionMessage.getParameter("ServerPort"));
 
+        String encryptedSessionKey = sessionMessage.getParameter("SessionKey");
+        String encryptedSessionIV = sessionMessage.getParameter("SessionIV");
+
+        String sessionKeyString = new String(HandshakeCrypto.decrypt(encryptedSessionKey.getBytes(), clientPrivateKey));
+        String ivString = new String(HandshakeCrypto.decrypt(encryptedSessionIV.getBytes(), clientPrivateKey));
+
+        sessionDecrypter = new SessionDecrypter(sessionKeyString, ivString);
+        sessionEncrypter = new SessionEncrypter(sessionKeyString, ivString);
+
         socket.close();
 
         Logger.log("Finished with handshake.");
@@ -108,6 +125,7 @@ public class ForwardClient {
 
         clientCertificate = new CertificateCrypto(true, arguments.get("usercert"));
         caCertificate = new CertificateCrypto(true, arguments.get("cacert"));
+        clientPrivateKey = CertificateCrypto.getPrivateKeyFromFile(arguments.get("key"));
 
         doHandshake();
 
