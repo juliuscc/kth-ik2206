@@ -13,10 +13,7 @@ package vpn_project.forward_server;
  * (c) 2001 by Svetlin Nakov - http://www.nakov.com
  */
 
-import vpn_project.crypto.CertificateCrypto;
-import vpn_project.crypto.HandshakeCrypto;
-import vpn_project.crypto.SessionEncrypter;
-import vpn_project.crypto.SessionKey;
+import vpn_project.crypto.*;
 
 import java.io.*;
 import java.lang.AssertionError;
@@ -46,6 +43,9 @@ public class ForwardServer {
 
     private static CertificateCrypto serverCertificate;
     private static CertificateCrypto caCertificate;
+
+    private static SessionDecrypter sessionDecrypter;
+    private static SessionEncrypter sessionEncrypter;
 
     /**
      * Do handshake negotiation with client to authenticate, learn
@@ -93,12 +93,12 @@ public class ForwardServer {
             targetPort = Integer.parseInt(forwardMessage.getParameter("TargetPort"));
 
             /* Session Message */
-            SessionEncrypter sessionEncrypter = new SessionEncrypter(256);
+            sessionEncrypter = new SessionEncrypter(256);
             String sessionKeyString = sessionEncrypter.encodeKey();
-            String encryptedKey = new String(HandshakeCrypto.encrypt(sessionKeyString.getBytes(), clientCertificate.getCertificate().getPublicKey()));
+            byte[] encryptedKey = HandshakeCrypto.encrypt(sessionKeyString.getBytes(), clientCertificate.getCertificate().getPublicKey());
 
             String sessionIVString = sessionEncrypter.encodeIV();
-            String encryptedIV = new String(HandshakeCrypto.encrypt(sessionIVString.getBytes(), clientCertificate.getCertificate().getPublicKey()));
+            byte[] encryptedIV = HandshakeCrypto.encrypt(sessionIVString.getBytes(), clientCertificate.getCertificate().getPublicKey());
 
             String serverHost = InetAddress.getLocalHost().getHostAddress();
 
@@ -107,15 +107,16 @@ public class ForwardServer {
 
             HandshakeMessage sessionMessage = new HandshakeMessage();
             sessionMessage.putParameter("MessageType", "Session");
-            sessionMessage.putParameter("SessionKey", encryptedKey);
-            sessionMessage.putParameter("SessionIV", encryptedIV);
+            sessionMessage.putParameter("SessionKey", HandshakeCrypto.byte64Encode(encryptedKey));
+            sessionMessage.putParameter("SessionIV", HandshakeCrypto.byte64Encode(encryptedIV));
             sessionMessage.putParameter("ServerHost", serverHost);
             sessionMessage.putParameter("ServerPort", Integer.toString(listenSocket.getLocalPort()));
 
             sessionMessage.send(clientSocket);
 
+            sessionDecrypter = new SessionDecrypter(sessionKeyString, sessionIVString);
             clientSocket.close();
-            
+
             Logger.log("Finished with handshake.");
         } catch (Exception e) {
             clientSocket.close();
@@ -148,7 +149,7 @@ public class ForwardServer {
 
                 doHandshake();
 
-                forwardThread = new ForwardServerClientThread(this.listenSocket, this.targetHost, this.targetPort);
+                forwardThread = new ForwardServerClientThread(this.listenSocket, this.targetHost, this.targetPort, sessionDecrypter, sessionEncrypter);
                 forwardThread.start();
             } catch (IOException e) {
                 System.out.println("Establishing connection with client was not possible.");

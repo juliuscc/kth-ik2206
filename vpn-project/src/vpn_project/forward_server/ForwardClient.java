@@ -93,11 +93,11 @@ public class ForwardClient {
         serverHost = sessionMessage.getParameter("ServerHost");
         serverPort = Integer.parseInt(sessionMessage.getParameter("ServerPort"));
 
-        String encryptedSessionKey = sessionMessage.getParameter("SessionKey");
-        String encryptedSessionIV = sessionMessage.getParameter("SessionIV");
+        byte[] encryptedSessionKey = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionKey"));
+        byte[] encryptedSessionIV = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionIV"));
 
-        String sessionKeyString = new String(HandshakeCrypto.decrypt(encryptedSessionKey.getBytes(), clientPrivateKey));
-        String ivString = new String(HandshakeCrypto.decrypt(encryptedSessionIV.getBytes(), clientPrivateKey));
+        String sessionKeyString = new String(HandshakeCrypto.decrypt(encryptedSessionKey, clientPrivateKey));
+        String ivString = new String(HandshakeCrypto.decrypt(encryptedSessionIV, clientPrivateKey));
 
         sessionDecrypter = new SessionDecrypter(sessionKeyString, ivString);
         sessionEncrypter = new SessionEncrypter(sessionKeyString, ivString);
@@ -148,7 +148,7 @@ public class ForwardClient {
             String clientHostPort = clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort();
             log("Accepted client from " + clientHostPort);
 
-            forwardThread = new ForwardServerClientThread(clientSocket, serverHost, serverPort);
+            forwardThread = new ForwardServerClientThread(clientSocket, serverHost, serverPort, sessionDecrypter, sessionEncrypter);
             forwardThread.start();
 
         } catch (IOException e) {

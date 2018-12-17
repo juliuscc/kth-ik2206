@@ -13,6 +13,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 
 public class HandshakeCrypto {
 
@@ -44,5 +45,13 @@ public class HandshakeCrypto {
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
         return keyFactory.generatePrivate(keySpec);
+    }
+
+    public static String byte64Encode(byte[] text) {
+        return Base64.getEncoder().withoutPadding().encodeToString(text);
+    }
+
+    public static byte[] byte64Decode(String text) {
+        return Base64.getDecoder().decode(text);
     }
 }
