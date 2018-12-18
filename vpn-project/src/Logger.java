@@ -1,5 +1,3 @@
-package vpn_project.forward_server;
-
 public class Logger {
     private static final boolean ENABLE_LOGGING = true;
 

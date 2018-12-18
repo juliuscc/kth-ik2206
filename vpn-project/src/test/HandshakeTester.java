@@ -1,6 +1,6 @@
-package vpn_project.test;
+package test;
 
-import vpn_project.crypto.HandshakeCrypto;
+import crypto.HandshakeCrypto;
 
 import java.security.*;
 

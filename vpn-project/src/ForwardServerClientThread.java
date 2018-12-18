@@ -1,4 +1,4 @@
-package vpn_project.forward_server; /**
+/**
  * ForwardServerClientThread handles the clients of Nakov Forward Server. It
  * connects two sockets and starts the TCP forwarding between given client
  * and its assigned server. After the forwarding is failed and the two threads
@@ -11,19 +11,14 @@ package vpn_project.forward_server; /**
  * Peter Sjodin, KTH
  */
 
-import vpn_project.crypto.SessionDecrypter;
-import vpn_project.crypto.SessionEncrypter;
+import crypto.SessionDecrypter;
+import crypto.SessionEncrypter;
 
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.net.SocketException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.crypto.CipherOutputStream;
-import javax.crypto.CipherInputStream;
 
 public class ForwardServerClientThread extends Thread {
     private ForwardClient mForwardClient = null;

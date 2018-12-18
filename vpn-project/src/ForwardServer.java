@@ -1,5 +1,3 @@
-package vpn_project.forward_server;
-
 /**
  * Port forwarding server. Forward data
  * between two TCP ports. Based on Nakov TCP Socket Forward Server
@@ -13,14 +11,10 @@ package vpn_project.forward_server;
  * (c) 2001 by Svetlin Nakov - http://www.nakov.com
  */
 
-import vpn_project.crypto.*;
+import crypto.*;
 
 import java.io.*;
-import java.lang.AssertionError;
 import java.lang.Integer;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.InetAddress;

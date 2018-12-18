@@ -1,7 +1,7 @@
-package vpn_project.test;
+package test;
 
 import org.junit.jupiter.api.Test;
-import vpn_project.crypto.SessionKey;
+import crypto.SessionKey;
 
 import java.security.NoSuchAlgorithmException;
 

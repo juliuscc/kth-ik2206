@@ -1,5 +1,3 @@
-package vpn_project.forward_server;
-
 public class Handshake {
     /* Static data -- replace with handshake! */
 

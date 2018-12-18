@@ -1,5 +1,3 @@
-package vpn_project.forward_server;
-
 /**
  * Port forwarding client. Forward data
  * between two TCP ports. Based on Nakov TCP Socket Forward Server
@@ -14,10 +12,10 @@ package vpn_project.forward_server;
  */
 
 
-import vpn_project.crypto.CertificateCrypto;
-import vpn_project.crypto.HandshakeCrypto;
-import vpn_project.crypto.SessionDecrypter;
-import vpn_project.crypto.SessionEncrypter;
+import crypto.CertificateCrypto;
+import crypto.HandshakeCrypto;
+import crypto.SessionDecrypter;
+import crypto.SessionEncrypter;
 
 import java.io.*;
 import java.lang.IllegalArgumentException;
@@ -29,8 +27,6 @@ import java.net.UnknownHostException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Base64;
 
 public class ForwardClient {
     private static final boolean ENABLE_LOGGING = true;
