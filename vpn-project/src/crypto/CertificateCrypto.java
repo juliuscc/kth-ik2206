@@ -1,4 +1,4 @@
-package vpn_project.crypto;
+package crypto;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package vpn_project.crypto;
+package crypto;
 
 import java.io.*;
 import java.security.cert.CertificateException;
