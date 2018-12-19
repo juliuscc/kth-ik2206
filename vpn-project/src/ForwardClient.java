@@ -54,53 +54,58 @@ public class ForwardClient {
 
         /* This is where the handshake should take place */
 
-        /* ClientHello Message */
-        HandshakeMessage clientHello = new HandshakeMessage();
-        clientHello.putParameter("MessageType", "ClientHello");
-        clientHello.putParameter("Certificate", clientCertificate.encodeCertificate());
-        clientHello.send(socket);
+        try {
+            /* ClientHello Message */
+            HandshakeMessage clientHello = new HandshakeMessage();
+            clientHello.putParameter("MessageType", "ClientHello");
+            clientHello.putParameter("Certificate", clientCertificate.encodeCertificate());
+            clientHello.send(socket);
 
-        /* ServerHello Message */
-        HandshakeMessage serverHello = new HandshakeMessage();
-        serverHello.recv(socket);
+            /* ServerHello Message */
+            HandshakeMessage serverHello = new HandshakeMessage();
+            serverHello.recv(socket);
 
-        if (!serverHello.getParameter("MessageType").equals("ServerHello")) {
-            throw new Exception("Received unexpected message");
+            if (!serverHello.getParameter("MessageType").equals("ServerHello")) {
+                throw new Exception("Received unexpected message");
+            }
+            CertificateCrypto serverCertificate = new CertificateCrypto(serverHello.getParameter("Certificate"));
+            serverCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
+            serverCertificate.getCertificate().checkValidity();
+
+            /* Forward Message */
+            HandshakeMessage forwardMessage = new HandshakeMessage();
+            forwardMessage.putParameter("MessageType", "Forward");
+            forwardMessage.putParameter("TargetHost", arguments.get("targethost"));
+            forwardMessage.putParameter("TargetPort", arguments.get("targetport"));
+            forwardMessage.send(socket);
+
+            /* Session Message */
+            HandshakeMessage sessionMessage = new HandshakeMessage();
+            sessionMessage.recv(socket);
+
+            if (!sessionMessage.getParameter("MessageType").equals("Session")) {
+                throw new Exception("Received unexpected message");
+            }
+
+            serverHost = sessionMessage.getParameter("ServerHost");
+            serverPort = Integer.parseInt(sessionMessage.getParameter("ServerPort"));
+
+            byte[] encryptedSessionKey = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionKey"));
+            byte[] encryptedSessionIV = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionIV"));
+
+            String sessionKeyString = new String(HandshakeCrypto.decrypt(encryptedSessionKey, clientPrivateKey));
+            String ivString = new String(HandshakeCrypto.decrypt(encryptedSessionIV, clientPrivateKey));
+
+            sessionDecrypter = new SessionDecrypter(sessionKeyString, ivString);
+            sessionEncrypter = new SessionEncrypter(sessionKeyString, ivString);
+
+            socket.close();
+
+            Logger.log("Finished with handshake.");
+        } catch (Exception e) {
+            socket.close();
+            throw e;
         }
-        CertificateCrypto serverCertificate = new CertificateCrypto(serverHello.getParameter("Certificate"));
-        serverCertificate.getCertificate().verify(caCertificate.getCertificate().getPublicKey());
-        serverCertificate.getCertificate().checkValidity();
-
-        /* Forward Message */
-        HandshakeMessage forwardMessage = new HandshakeMessage();
-        forwardMessage.putParameter("MessageType", "Forward");
-        forwardMessage.putParameter("TargetHost", arguments.get("targethost"));
-        forwardMessage.putParameter("TargetPort", arguments.get("targetport"));
-        forwardMessage.send(socket);
-
-        /* Session Message */
-        HandshakeMessage sessionMessage = new HandshakeMessage();
-        sessionMessage.recv(socket);
-
-        if (!sessionMessage.getParameter("MessageType").equals("Session")) {
-            throw new Exception("Received unexpected message");
-        }
-
-        serverHost = sessionMessage.getParameter("ServerHost");
-        serverPort = Integer.parseInt(sessionMessage.getParameter("ServerPort"));
-
-        byte[] encryptedSessionKey = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionKey"));
-        byte[] encryptedSessionIV = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionIV"));
-
-        String sessionKeyString = new String(HandshakeCrypto.decrypt(encryptedSessionKey, clientPrivateKey));
-        String ivString = new String(HandshakeCrypto.decrypt(encryptedSessionIV, clientPrivateKey));
-
-        sessionDecrypter = new SessionDecrypter(sessionKeyString, ivString);
-        sessionEncrypter = new SessionEncrypter(sessionKeyString, ivString);
-
-        socket.close();
-
-        Logger.log("Finished with handshake.");
     }
 
     /*
