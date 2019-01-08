@@ -21,6 +21,10 @@ public class SessionKey {
         secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
     }
 
+    public SessionKey(byte[] key) {
+        secretKey = new SecretKeySpec(key, 0, key.length, "AES");
+    }
+
     public SecretKey getSecretKey() {
         return secretKey;
     }

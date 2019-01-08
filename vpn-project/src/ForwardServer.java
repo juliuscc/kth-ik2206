@@ -88,11 +88,8 @@ public class ForwardServer {
 
             /* Session Message */
             sessionEncrypter = new SessionEncrypter(256);
-            String sessionKeyString = sessionEncrypter.encodeKey();
-            byte[] encryptedKey = HandshakeCrypto.encrypt(sessionKeyString.getBytes(), clientCertificate.getCertificate().getPublicKey());
-
-            String sessionIVString = sessionEncrypter.encodeIV();
-            byte[] encryptedIV = HandshakeCrypto.encrypt(sessionIVString.getBytes(), clientCertificate.getCertificate().getPublicKey());
+            byte[] encryptedKey = HandshakeCrypto.encrypt(sessionEncrypter.getRawKey(), clientCertificate.getCertificate().getPublicKey());
+            byte[] encryptedIV = HandshakeCrypto.encrypt(sessionEncrypter.getRawIV(), clientCertificate.getCertificate().getPublicKey());
 
             String serverHost = InetAddress.getLocalHost().getHostAddress();
 
@@ -108,7 +105,7 @@ public class ForwardServer {
 
             sessionMessage.send(clientSocket);
 
-            sessionDecrypter = new SessionDecrypter(sessionKeyString, sessionIVString);
+            sessionDecrypter = new SessionDecrypter(sessionEncrypter.encodeKey(), sessionEncrypter.encodeIV());
             clientSocket.close();
 
             Logger.log("Finished with handshake.");

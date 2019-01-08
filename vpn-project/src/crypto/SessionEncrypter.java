@@ -23,6 +23,15 @@ public class SessionEncrypter {
         cipher.init(Cipher.ENCRYPT_MODE, this.key.getSecretKey(), this.iv);
     }
 
+    public SessionEncrypter(byte[] key, byte[] iv) throws InvalidAlgorithmParameterException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
+        cipher = Cipher.getInstance("AES/CTR/NoPadding");
+
+        this.key = new SessionKey(key);
+        this.iv = new IvParameterSpec(iv);
+
+        cipher.init(Cipher.ENCRYPT_MODE, this.key.getSecretKey(), this.iv);
+    }
+
     public SessionEncrypter(Integer keylength) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
 
         cipher = Cipher.getInstance("AES/CTR/NoPadding");
@@ -47,6 +56,15 @@ public class SessionEncrypter {
                 .withoutPadding()
                 .encodeToString(iv.getIV());
     }
+
+    public byte[] getRawKey() {
+        return key.getSecretKey().getEncoded();
+    }
+
+    public byte[] getRawIV() {
+        return iv.getIV();
+    }
+
 
     public CipherOutputStream openCipherOutputStream(OutputStream output) {
         return new CipherOutputStream(output, cipher);

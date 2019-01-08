@@ -25,6 +25,15 @@ public class SessionDecrypter {
         cipher.init(Cipher.DECRYPT_MODE, this.key.getSecretKey(), this.iv);
     }
 
+    public SessionDecrypter(byte[] key, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+        cipher = Cipher.getInstance("AES/CTR/NoPadding");
+
+        this.key = new SessionKey(key);
+        this.iv = new IvParameterSpec(iv);
+
+        cipher.init(Cipher.DECRYPT_MODE, this.key.getSecretKey(), this.iv);
+    }
+
     public CipherInputStream openCipherInputStream(InputStream input) {
         return new CipherInputStream(input, cipher);
     }

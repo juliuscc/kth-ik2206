@@ -93,11 +93,11 @@ public class ForwardClient {
             byte[] encryptedSessionKey = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionKey"));
             byte[] encryptedSessionIV = HandshakeCrypto.byte64Decode(sessionMessage.getParameter("SessionIV"));
 
-            String sessionKeyString = new String(HandshakeCrypto.decrypt(encryptedSessionKey, clientPrivateKey));
-            String ivString = new String(HandshakeCrypto.decrypt(encryptedSessionIV, clientPrivateKey));
+            byte[] sessionKeyByteArray = HandshakeCrypto.decrypt(encryptedSessionKey, clientPrivateKey);
+            byte[] ivByteArray = HandshakeCrypto.decrypt(encryptedSessionIV, clientPrivateKey);
 
-            sessionDecrypter = new SessionDecrypter(sessionKeyString, ivString);
-            sessionEncrypter = new SessionEncrypter(sessionKeyString, ivString);
+            sessionDecrypter = new SessionDecrypter(sessionKeyByteArray, ivByteArray);
+            sessionEncrypter = new SessionEncrypter(sessionKeyByteArray, ivByteArray);
 
             socket.close();
 
